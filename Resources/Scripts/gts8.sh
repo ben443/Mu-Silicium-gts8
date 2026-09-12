@@ -4,6 +4,11 @@ if ! declare -F _error > /dev/null; then
   function _error(){ echo -e "\033[1;31m${@}\033[0m" >&2; exit 1; }
 fi
 
+case "${TARGET_BUILD_MODE^^}" in
+  DEBUG) TARGET_BUILD_MODE=DEBUG;;
+  *) TARGET_BUILD_MODE=RELEASE;;
+esac
+
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 BUILD_DIR="${REPO_ROOT}/Build/gts8Pkg/${TARGET_BUILD_MODE}_CLANGPDB/FV"
@@ -14,7 +19,6 @@ BOOTPAYLOAD="${BUILD_DIR}/bootpayload.bin"
 DTB_IMAGE="${REPO_ROOT}/Resources/DTBs/gts8.dtb"
 RAMDISK_IMAGE="${REPO_ROOT}/Resources/ramdisk"
 
-[ -n "${TARGET_BUILD_MODE:-}" ] || _error "\nTARGET_BUILD_MODE is not set for gts8 image packaging.\n"
 [ -f "${SCRIPT_DIR}/mkbootimg.py" ] || _error "\nmkbootimg.py not found: ${SCRIPT_DIR}/mkbootimg.py\n"
 [ -f "${REPO_ROOT}/BootShim/BootShim.bin" ] || _error "\nBootShim binary not found: ${REPO_ROOT}/BootShim/BootShim.bin\n"
 [ -f "${FD_IMAGE}" ] || _error "\nUEFI image not found for gts8: ${FD_IMAGE}\n"
