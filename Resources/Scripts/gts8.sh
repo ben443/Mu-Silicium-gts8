@@ -23,7 +23,7 @@ RAMDISK_IMAGE="${REPO_ROOT}/Resources/ramdisk"
 [ -f "${REPO_ROOT}/BootShim/BootShim.bin" ] || _error "\nBootShim binary not found: ${REPO_ROOT}/BootShim/BootShim.bin\n"
 [ -f "${FD_IMAGE}" ] || _error "\nUEFI image not found for gts8: ${FD_IMAGE}\n"
 [ -f "${DTB_IMAGE}" ] || _error "\ngts8 DTB not found: ${DTB_IMAGE}\n"
-[ -e "${RAMDISK_IMAGE}" ] || _error "\nRamdisk not found: ${RAMDISK_IMAGE}\n"
+[ -f "${RAMDISK_IMAGE}" ] || _error "\nRamdisk not found: ${RAMDISK_IMAGE}\n"
 
 # Build an Android kernel that is actually UEFI disguised as the Kernel
 cat "${REPO_ROOT}/BootShim/BootShim.bin" "${FD_IMAGE}" > "${BOOTSHIM_IMAGE}"||exit 1
