@@ -60,4 +60,4 @@ mv -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_OUTPUT}" || { rm -f "${BOOT_IMAGE_TMP}";
 cp -f "${BOOT_IMAGE_OUTPUT}" "${BOOT_IMAGE_STAGE_TMP}" && mv -f "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}" || { rm -f "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}"; _error "\nFailed to stage boot.img for the gts8 Odin tarball.\n"; }
 tar -C "$(dirname "${BOOT_IMAGE_STAGE}")" -c -f "${BOOT_TAR_TMP}" "$(basename "${BOOT_IMAGE_STAGE}")" || { rm -f "${BOOT_IMAGE_STAGE}" "${BOOT_TAR_TMP}"; _error "\nFailed to create the gts8 Odin tarball.\n"; }
 rm -f "${BOOT_IMAGE_STAGE}"
-mv -f "${BOOT_TAR_TMP}" "${BOOT_TAR}" || { rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to finalize the gts8 Odin tarball.\n"; }
+mv -f "${BOOT_TAR_TMP}" "${BOOT_TAR}" || { rm -f "${BOOT_IMAGE_STAGE}" "${BOOT_TAR_TMP}"; _error "\nFailed to finalize the gts8 Odin tarball.\n"; }
