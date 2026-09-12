@@ -21,6 +21,7 @@ RAMDISK_IMAGE="${REPO_ROOT}/Resources/ramdisk"
 
 [ -f "${SCRIPT_DIR}/mkbootimg.py" ] || _error "\nmkbootimg.py not found: ${SCRIPT_DIR}/mkbootimg.py\n"
 [ -f "${REPO_ROOT}/BootShim/BootShim.bin" ] || _error "\nBootShim binary not found: ${REPO_ROOT}/BootShim/BootShim.bin\n"
+[ -d "${BUILD_DIR}" ] || _error "\ngts8 build output directory not found: ${BUILD_DIR}\n"
 [ -f "${FD_IMAGE}" ] || _error "\nUEFI image not found for gts8: ${FD_IMAGE}\n"
 [ -f "${DTB_IMAGE}" ] || _error "\ngts8 DTB not found: ${DTB_IMAGE}\n"
 [ -f "${RAMDISK_IMAGE}" ] || _error "\nRamdisk not found: ${RAMDISK_IMAGE}\n"
