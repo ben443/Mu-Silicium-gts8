@@ -16,6 +16,9 @@ FD_IMAGE="${BUILD_DIR}/GTS8_UEFI.fd"
 BOOTSHIM_IMAGE="${FD_IMAGE}-bootshim"
 BOOTSHIM_IMAGE_GZ="${BOOTSHIM_IMAGE}.gz"
 BOOTPAYLOAD="${BUILD_DIR}/bootpayload.bin"
+BOOTSHIM_IMAGE_TMP="${BOOTSHIM_IMAGE}.tmp"
+BOOTSHIM_IMAGE_GZ_TMP="${BOOTSHIM_IMAGE_GZ}.tmp"
+BOOTPAYLOAD_TMP="${BOOTPAYLOAD}.tmp"
 DTB_IMAGE="${REPO_ROOT}/Resources/DTBs/gts8.dtb"
 RAMDISK_IMAGE="${REPO_ROOT}/Resources/ramdisk"
 
@@ -27,9 +30,10 @@ RAMDISK_IMAGE="${REPO_ROOT}/Resources/ramdisk"
 [ -f "${RAMDISK_IMAGE}" ] || _error "\nRamdisk not found: ${RAMDISK_IMAGE}\n"
 
 # Build an Android kernel that is actually UEFI disguised as the Kernel
-cat "${REPO_ROOT}/BootShim/BootShim.bin" "${FD_IMAGE}" > "${BOOTSHIM_IMAGE}" || _error "\nFailed to append BootShim to the gts8 UEFI image.\n"
-gzip -c < "${BOOTSHIM_IMAGE}" > "${BOOTSHIM_IMAGE_GZ}" || _error "\nFailed to compress the gts8 BootShim image.\n"
-cat "${BOOTSHIM_IMAGE_GZ}" "${DTB_IMAGE}" > "${BOOTPAYLOAD}" || _error "\nFailed to build the gts8 bootpayload.\n"
+rm -f "${BOOTSHIM_IMAGE_TMP}" "${BOOTSHIM_IMAGE_GZ_TMP}" "${BOOTPAYLOAD_TMP}"
+cat "${REPO_ROOT}/BootShim/BootShim.bin" "${FD_IMAGE}" > "${BOOTSHIM_IMAGE_TMP}" && mv -f "${BOOTSHIM_IMAGE_TMP}" "${BOOTSHIM_IMAGE}" || { rm -f "${BOOTSHIM_IMAGE_TMP}"; _error "\nFailed to append BootShim to the gts8 UEFI image.\n"; }
+gzip -c < "${BOOTSHIM_IMAGE}" > "${BOOTSHIM_IMAGE_GZ_TMP}" && mv -f "${BOOTSHIM_IMAGE_GZ_TMP}" "${BOOTSHIM_IMAGE_GZ}" || { rm -f "${BOOTSHIM_IMAGE_GZ_TMP}"; _error "\nFailed to compress the gts8 BootShim image.\n"; }
+cat "${BOOTSHIM_IMAGE_GZ}" "${DTB_IMAGE}" > "${BOOTPAYLOAD_TMP}" && mv -f "${BOOTPAYLOAD_TMP}" "${BOOTPAYLOAD}" || { rm -f "${BOOTPAYLOAD_TMP}"; _error "\nFailed to build the gts8 bootpayload.\n"; }
 
 # Create bootable Android boot.img
 python3 "${SCRIPT_DIR}/mkbootimg.py" \
