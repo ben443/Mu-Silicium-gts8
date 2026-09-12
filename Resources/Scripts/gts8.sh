@@ -4,6 +4,11 @@ if ! declare -F _error > /dev/null; then
   function _error(){ echo -e "\033[1;31m${@}\033[0m" >&2; exit 1; }
 fi
 
+function _cleanup_boot_stage(){
+  rm -f "${BOOT_IMAGE_STAGE}" "${BOOT_IMAGE_STAGE_TMP}"
+  rmdir "${BOOT_IMAGE_STAGE_DIR}" 2> /dev/null || true
+}
+
 case "${TARGET_BUILD_MODE^^}" in
   DEBUG) TARGET_BUILD_MODE=DEBUG;;
   *) TARGET_BUILD_MODE=RELEASE;;
@@ -57,11 +62,10 @@ python3 "${SCRIPT_DIR}/mkbootimg.py" \
   --header_version 1 \
   -o "${BOOT_IMAGE_TMP}" \
   || _error "\nFailed to create the gts8 Android boot image.\n"
-cp -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_STAGE_TMP}" && mv -f "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}" || { rm -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}"; _error "\nFailed to stage boot.img for the gts8 Odin tarball.\n"; }
+cp -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_STAGE_TMP}" && mv -f "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}" || { rm -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}"; _cleanup_boot_stage; _error "\nFailed to stage boot.img for the gts8 Odin tarball.\n"; }
 mv -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_OUTPUT}" || { rm -f "${BOOT_IMAGE_TMP}"; _error "\nFailed to finalize the gts8 Android boot image.\n"; }
 
 # Compress Boot Image in a tar File for Odin/heimdall Flash
-tar -C "${BOOT_IMAGE_STAGE_DIR}" -c -f "${BOOT_TAR_TMP}" "boot.img" || { rm -rf "${BOOT_IMAGE_STAGE_DIR}" "${BOOT_TAR_TMP}"; _error "\nFailed to create the gts8 Odin tarball.\n"; }
-rm -f "${BOOT_IMAGE_STAGE}"
-rmdir "${BOOT_IMAGE_STAGE_DIR}" 2> /dev/null || true
-mv -f "${BOOT_TAR_TMP}" "${BOOT_TAR}" || { rm -rf "${BOOT_IMAGE_STAGE_DIR}" "${BOOT_TAR_TMP}"; _error "\nFailed to finalize the gts8 Odin tarball.\n"; }
+tar -C "${BOOT_IMAGE_STAGE_DIR}" -c -f "${BOOT_TAR_TMP}" "boot.img" || { _cleanup_boot_stage; rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to create the gts8 Odin tarball.\n"; }
+_cleanup_boot_stage
+mv -f "${BOOT_TAR_TMP}" "${BOOT_TAR}" || { _cleanup_boot_stage; rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to finalize the gts8 Odin tarball.\n"; }
