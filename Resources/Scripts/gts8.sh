@@ -42,7 +42,7 @@ gzip -c < "${BOOTSHIM_IMAGE}" > "${BOOTSHIM_IMAGE_GZ_TMP}" && mv -f "${BOOTSHIM_
 cat "${BOOTSHIM_IMAGE_GZ}" "${DTB_IMAGE}" > "${BOOTPAYLOAD_TMP}" && mv -f "${BOOTPAYLOAD_TMP}" "${BOOTPAYLOAD}" || { rm -f "${BOOTPAYLOAD_TMP}"; _error "\nFailed to build the gts8 bootpayload.\n"; }
 
 # Create bootable Android boot.img
-rm -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_STAGE}" "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_TAR_TMP}"
+rm -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_TAR_TMP}"
 python3 "${SCRIPT_DIR}/mkbootimg.py" \
   --kernel "${BOOTPAYLOAD}" \
   --ramdisk "${RAMDISK_IMAGE}" \
