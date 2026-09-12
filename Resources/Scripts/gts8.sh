@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! declare -F _error > /dev/null; then
+  function _error(){ echo -e "\033[1;31m${@}\033[0m" >&2; exit 1; }
+fi
+
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 BUILD_DIR="${REPO_ROOT}/Build/gts8Pkg/${TARGET_BUILD_MODE}_CLANGPDB/FV"
