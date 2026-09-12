@@ -20,6 +20,8 @@ BOOTSHIM_IMAGE_TMP="${BOOTSHIM_IMAGE}.tmp"
 BOOTSHIM_IMAGE_GZ_TMP="${BOOTSHIM_IMAGE_GZ}.tmp"
 BOOTPAYLOAD_TMP="${BOOTPAYLOAD}.tmp"
 BOOT_IMAGE_TMP="${REPO_ROOT}/boot.img.tmp"
+BOOT_IMAGE_STAGE="${REPO_ROOT}/boot.img"
+BOOT_IMAGE_STAGE_TMP="${BOOT_IMAGE_STAGE}.tmp"
 BOOT_TAR="${REPO_ROOT}/Mu-gts8.tar"
 BOOT_TAR_TMP="${BOOT_TAR}.tmp"
 BOOT_IMAGE_OUTPUT="${REPO_ROOT}/Mu-gts8.img"
@@ -40,7 +42,7 @@ gzip -c < "${BOOTSHIM_IMAGE}" > "${BOOTSHIM_IMAGE_GZ_TMP}" && mv -f "${BOOTSHIM_
 cat "${BOOTSHIM_IMAGE_GZ}" "${DTB_IMAGE}" > "${BOOTPAYLOAD_TMP}" && mv -f "${BOOTPAYLOAD_TMP}" "${BOOTPAYLOAD}" || { rm -f "${BOOTPAYLOAD_TMP}"; _error "\nFailed to build the gts8 bootpayload.\n"; }
 
 # Create bootable Android boot.img
-rm -f "${BOOT_IMAGE_TMP}" "${BOOT_TAR_TMP}"
+rm -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_STAGE}" "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_TAR_TMP}"
 python3 "${SCRIPT_DIR}/mkbootimg.py" \
   --kernel "${BOOTPAYLOAD}" \
   --ramdisk "${RAMDISK_IMAGE}" \
@@ -55,5 +57,7 @@ python3 "${SCRIPT_DIR}/mkbootimg.py" \
 mv -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE_OUTPUT}" || { rm -f "${BOOT_IMAGE_TMP}"; _error "\nFailed to finalize the gts8 Android boot image.\n"; }
 
 # Compress Boot Image in a tar File for Odin/heimdall Flash
-tar -C "$(dirname "${BOOT_IMAGE_OUTPUT}")" -c -f "${BOOT_TAR_TMP}" "$(basename "${BOOT_IMAGE_OUTPUT}")" || { rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to create the gts8 Odin tarball.\n"; }
+cp -f "${BOOT_IMAGE_OUTPUT}" "${BOOT_IMAGE_STAGE_TMP}" && mv -f "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}" || { rm -f "${BOOT_IMAGE_STAGE_TMP}" "${BOOT_IMAGE_STAGE}"; _error "\nFailed to stage boot.img for the gts8 Odin tarball.\n"; }
+tar -C "$(dirname "${BOOT_IMAGE_STAGE}")" -c -f "${BOOT_TAR_TMP}" "$(basename "${BOOT_IMAGE_STAGE}")" || { rm -f "${BOOT_IMAGE_STAGE}" "${BOOT_TAR_TMP}"; _error "\nFailed to create the gts8 Odin tarball.\n"; }
+rm -f "${BOOT_IMAGE_STAGE}"
 mv -f "${BOOT_TAR_TMP}" "${BOOT_TAR}" || { rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to finalize the gts8 Odin tarball.\n"; }
