@@ -36,7 +36,7 @@ gConfigurationEntryDescriptorEx[] = {
   {"EarlyInitCoreCnt", 2},
   {"EnableUefiSecAppDebugLogDump", 0x0},
   {"AllowNonPersistentVarsInRetail", 0x1},
-  {"EnableDisplayThread", 0x1},
+  {"EnableDisplayThread", 0x1}, // TODO: Re-check against gts8p if display timing issues persist on real hardware.
   {"EnableDisplayImageFv", 0x0},
   {"PrimaryLogoIndex", 1},
   {"SecondaryLogoIndex", 2},
