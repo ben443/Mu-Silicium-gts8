@@ -54,8 +54,8 @@ python3 "${SCRIPT_DIR}/mkbootimg.py" \
   -o "${BOOT_IMAGE_TMP}" \
   || _error "\nFailed to create the gts8 Android boot image.\n"
 mv -f "${BOOT_IMAGE_TMP}" "${BOOT_IMAGE}" || { rm -f "${BOOT_IMAGE_TMP}"; _error "\nFailed to finalize the gts8 Android boot image.\n"; }
+mv -f "${BOOT_IMAGE}" "${BOOT_IMAGE_OUTPUT}" || _error "\nFailed to rename the gts8 boot image output.\n"
 
 # Compress Boot Image in a tar File for Odin/heimdall Flash
-tar -C "$(dirname "${BOOT_IMAGE}")" -c -f "${BOOT_TAR_TMP}" "$(basename "${BOOT_IMAGE}")" || { rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to create the gts8 Odin tarball.\n"; }
+tar -C "$(dirname "${BOOT_IMAGE_OUTPUT}")" -c -f "${BOOT_TAR_TMP}" "$(basename "${BOOT_IMAGE_OUTPUT}")" || { rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to create the gts8 Odin tarball.\n"; }
 mv -f "${BOOT_TAR_TMP}" "${BOOT_TAR}" || { rm -f "${BOOT_TAR_TMP}"; _error "\nFailed to finalize the gts8 Odin tarball.\n"; }
-mv -f "${BOOT_IMAGE}" "${BOOT_IMAGE_OUTPUT}" || _error "\nFailed to rename the gts8 boot image output.\n"
